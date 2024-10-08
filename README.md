@@ -20,6 +20,8 @@ To install dependencies:
 
 ```bash
 bun install
+bun install express mongoose
+bun install @types/express @types/mongoose typescript bun-types -d
 ```
 
 To run:
