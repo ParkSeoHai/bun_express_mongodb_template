@@ -9,8 +9,8 @@ const createPost = async (postData: IPost) => {
       author: postData.author,
       created: postData.created
     });
-    await post.save();
-    return post;
+    const result = await post.save();
+    return result;
   } catch (error) {
     throw error;
   }

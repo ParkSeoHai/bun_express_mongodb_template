@@ -1,4 +1,4 @@
-import { IApiResponse } from "../interfaces/apiresponse.interface";
+import { IApiResponse } from "../interfaces/apiResponse.interface";
 
 // Định dạng ngày tháng theo format dd/mm/yyyy
 export const formatDate = (date: Date): string => {

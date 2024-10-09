@@ -10,10 +10,14 @@ export const createPost = async (req: Request, res: Response, next: NextFunction
     const postData: IPost = { title, content, author, created };
 
     const result = await postService.createPost(postData);
-
-    const response = formatApiResponse("success", "Bài viết được tạo thành công", result);
-
-    res.status(201).send(response);
+    if (result) {
+      const response = formatApiResponse("success", "Bài viết được tạo thành công", result);
+      res.status(201).send(response);
+    } else {
+      const err = new Error("Tạo mới bài viết không thành công");
+      next(err);
+    }
+    
   } catch (error) {
     next(error);
   }
@@ -42,10 +46,10 @@ export const readPostById = async (req: Request, res: Response, next: NextFuncti
 
     // Nếu bài viết không tồn tại
     if (!post) {
-      console.log("Error: Bài viết không tìm thấy");
-      const response = formatApiResponse("error", "Bài viết không tìm thấy", null);
-
-      res.status(404).send(response);
+      const err = new Error(`Bài viết không tìm thấy với ID = ${id}`, {
+        cause: { statusCode: 404 }
+      });
+      next(err);
       return;
     }
 
@@ -75,9 +79,18 @@ export const updatePost = async (req: Request, res: Response, next: NextFunction
 
     const result = await postService.updatePost(id, postData);
 
-    const response = formatApiResponse("success", "Bài viết được cập nhật thành công", result);
-
-    res.status(201).send(response);
+    // Update success
+    if (result.matchedCount > 0) {
+      const response = formatApiResponse("success", "Bài viết được cập nhật thành công", result);
+      res.status(201).send(response);
+    } else {
+      // Update fail
+      const err = new Error(`Cập nhật bài viết không thành công với ID = ${id}`, {
+        cause: { statusCode: 404 }
+      });
+      next(err);
+    }
+    
   } catch (error) {
     next(error);
   }
@@ -89,9 +102,16 @@ export const deletePost = async (req: Request, res: Response, next: NextFunction
 
     const result = await postService.deletePost(id);
 
-    const response = formatApiResponse("success", "Xóa bài viết thành công", result);
+    if (result.deletedCount > 0) {
+      const response = formatApiResponse("success", "Xóa bài viết thành công", result);
+      res.status(201).send(response);
+    } else {
+      const err = new Error(`Xóa bài viết không thành công với ID = ${id}`, {
+        cause: { statusCode: 404 }
+      });
+      next(err);
+    }
 
-    res.status(201).send(response);
   } catch (error) {
     next(error);
   }
